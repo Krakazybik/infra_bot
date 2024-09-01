@@ -12,7 +12,7 @@ function confirmCmd(bot, ctx) {
     }
 
     try {
-      const changes = await confirmUser(chatId);
+      const changes = await confirmUser(userIdToConfirm);
 
       if (changes === 0) {
         bot.sendMessage(chatId, 'Пользователь не найден.');

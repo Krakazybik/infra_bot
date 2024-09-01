@@ -2,13 +2,18 @@ const { getUserInfo, updateServerInfo } = require('../db');
 const { normalizeServerInfo, logger } = require('../lib/utils');
 const { validateCommand, lockCommand, unlockCommand, execCommand } = require('./lib');
 
-function deleteCmd(bot) {
+async function deleteCmd(bot) {
   bot.onText(/\/delete/, async (msg) => {
     const chatId = msg.chat.id;
     const userInfo = await getUserInfo(chatId);
     const isValid = await validateCommand(bot, chatId, userInfo);
 
     if (!isValid) {
+      return;
+    }
+
+    if (!userInfo.server_info) {
+      bot.sendMessage(chatId, 'Сервер не создан.');
       return;
     }
 
@@ -24,11 +29,11 @@ function deleteCmd(bot) {
       await updateServerInfo(chatId, null);
 
       const serverInfo = normalizeServerInfo(userInfo.server_info);
-      logger.info(`Server deleted: ${chatId} - ${serverInfo.server_name}`);
+      logger.info(`Server deleted: ${chatId} - ${serverInfo?.server_name}`);
 
-      bot.sendMessage(chatId, `Сервер ${serverInfo.server_name} успешно удален.`);
+      bot.sendMessage(chatId, `Сервер ${serverInfo?.server_name} успешно удален.`);
     } catch (err) {
-      logger.error(`Error deleting server: ${chatId} - ${serverInfo.server_name}`, err);
+      logger.error(`Error deleting server: ${chatId}`, err);
       bot.sendMessage(chatId, `Ошибка: ${err.stderr}`);
     } finally {
       unlockCommand(chatId);
