@@ -30,7 +30,7 @@ const botFactory = ({ token, adminChatIds }) => {
 function bootstrap() {
   initDB();
   logger.info('DB initialized');
-  const adminChatIds = process.env.ADMIN_CHAT_IDS.split(',');
+  const adminChatIds = process.env.ADMIN_CHAT_IDS.split(',').map(Number);
   const token = process.env.TOKEN;
 
   botFactory({ token, adminChatIds })
